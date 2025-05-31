@@ -97,9 +97,11 @@
 
   <div id="custom-text">台灣二葉松（學名：Pinus taiwanensis）</div>
   <div id="quiz">
-    <p>台灣二葉松是常綠植物？</p>
+    <p id="question-text">題目載入中...</p>
     <button onclick="answer(true)">是</button>
     <button onclick="answer(false)">否</button>
+    <br />
+    <button id="next-btn" style="display: none;" onclick="nextQuestion()">下一題</button>
   </div>
   <audio id="correctSound" src="correct.mp3"></audio>
   <audio id="wrongSound" src="wrong.mp3"></audio>
@@ -119,6 +121,43 @@
     </a-entity>
   </a-scene>
   <script>
+    const quizData = [
+      { question: "台灣二葉松是常綠植物？", answer: true },
+      { question: "台灣二葉松原產於非洲？", answer: false },
+      { question: "台灣二葉松屬於松科？", answer: true },
+      { question: "台灣二葉松每年都會落葉？", answer: false },
+      { question: "台灣二葉松是台灣原生植物之一？", answer: true }
+    ];
+    let currentIndex = 0;
+
+    function showQuestion() {
+      const q = quizData[currentIndex];
+      document.getElementById("question-text").textContent = q.question;
+      document.getElementById("next-btn").style.display = "none";
+    }
+
+    function answer(isYes) {
+      const correct = quizData[currentIndex].answer;
+      const correctSound = document.getElementById("correctSound");
+      const wrongSound = document.getElementById("wrongSound");
+
+      if (isYes === correct) {
+        correctSound.play();
+        alert("答對了！");
+        document.getElementById("next-btn").style.display = currentIndex < quizData.length - 1 ? "inline-block" : "none";
+      } else {
+        wrongSound.play();
+        alert("答錯了！再試一次");
+      }
+    }
+
+    function nextQuestion() {
+      if (currentIndex < quizData.length - 1) {
+        currentIndex++;
+        showQuestion();
+      }
+    }
+
     window.addEventListener("load", () => {
       const target = document.querySelector("#target");
       const customDiv = document.querySelector("#custom-text");
@@ -132,23 +171,9 @@
       target.addEventListener("targetLost", () => {
         customDiv.style.display = "none";
         quizDiv.style.display = "block";
+        currentIndex = 0;
+        showQuestion();
       });
     });
-
-    function answer(isYes) {
-      const correct = true;
-      const correctSound = document.getElementById("correctSound");
-      const wrongSound = document.getElementById("wrongSound");
-
-      if (isYes === correct) {
-        correctSound.play();
-        alert("答對了！");
-      } else {
-        wrongSound.play();
-        alert("答錯了！");
-      }
-      document.querySelector("#quiz").style.display = "none";
-    }
   </script>
-</body>
 </html>
