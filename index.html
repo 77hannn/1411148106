@@ -6,7 +6,8 @@
   <!-- A-Frame + MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
+  <audio id="correctSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2e12c44b0d.mp3" preload="auto"></audio>
+  <audio id="wrongSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_32a8d3c2b7.mp3" preload="auto"></audio>
   <!-- CSS 設定 -->
   <style>
     html, body {
@@ -61,14 +62,6 @@
   <!-- 植物名稱 -->
   <div id="custom-text">台灣二葉松（學名：Pinus taiwanensis）</div>
 
-  <!-- 題目區塊 -->
-  <div id="quiz">
-    <p>台灣二葉松是常綠植物？</p>
-    <button onclick="answer(true)">是</button>
-    <button onclick="answer(false)">否</button>
-    <button id="next-btn" style="display: none;" onclick="nextQuestion()">下一題</button>
-  </div>
-
   <!-- 音效 -->
   <audio id="correctSound" src="correct.mp3"></audio>
   <audio id="wrongSound" src="wrong.mp3"></audio>
@@ -95,97 +88,74 @@
       <a-plane src="#resultImg" width="1.2" height="0.7" position="0 0 0"></a-plane>
     </a-entity>
   </a-scene>
-
-  <div id="custom-text">台灣二葉松（學名：Pinus taiwanensis）</div>
-  <div id="quiz">
-    <p id="question-text">題目載入中...</p>
-    <button onclick="answer(true)">是</button>
-    <button onclick="answer(false)">否</button>
-    <br />
-    <button id="next-btn" style="display: none;" onclick="nextQuestion()">下一題</button>
+<!-- 題目容器 -->
+<div id="quiz-container" style="display: none; position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 1em; border-radius: 0.5em; text-align: center; z-index: 9999;">
+  <div id="question-text"></div>
+  <div style="margin-top: 1em;">
+    <button onclick="submitAnswer(true)">是</button>
+    <button onclick="submitAnswer(false)">否</button>
+  </div>
+  <div id="next-button" style="display: none; margin-top: 1em;">
+    <button onclick="nextQuestion()">下一題</button>
+  </div>
+</div>
   </div>
   <audio id="correctSound" src="correct.mp3"></audio>
   <audio id="wrongSound" src="wrong.mp3"></audio>
   <script>
-    const textBox = document.getElementById("custom-text");
-    const quizBox = document.getElementById("quiz");
-    const questionText = document.getElementById("question-text");
-    const correctSound = document.getElementById("correctSound");
-    const wrongSound = document.getElementById("wrongSound");
+   const questions = [
+  { question: "台灣二葉松是針葉樹？", answer: true },
+  { question: "台灣二葉松原產於歐洲？", answer: false },
+  { question: "台灣二葉松常見於平地？", answer: false },
+  { question: "台灣二葉松的學名是Pinus taiwanensis？", answer: true },
+  { question: "台灣二葉松屬於落葉植物？", answer: false }
+];
 
-    const quizzes = {
-      0: {
-        name: "台灣二葉松",
-        questions: [
-          { q: "二葉松是松科植物？", a: true },
-          { q: "二葉松的葉子是針狀的？", a: true },
-          { q: "二葉松代表繁榮與長壽？", a: true },
-          { q: "二葉松原產於歐洲？", a: false },
-          { q: "二葉松常見於台灣高山地區？", a: true }
-        ]
-      },
-      1: {
-        name: "春不老",
-        questions: [
-          { q: "春不老屬於菊科植物？", a: true },
-          { q: "春不老的花是黃色的？", a: true },
-          { q: "春不老常見於寒帶地區？", a: false },
-          { q: "春不老象徵青春與長壽？", a: true },
-          { q: "春不老是木本植物？", a: false }
-        ]
-      }
-    };
+let currentQuestionIndex = 0;
+let showingQuestion = false;
 
-    let currentTarget = null;
-    let currentIndex = 0;
+const quizContainer = document.getElementById("quiz-container");
+const questionText = document.getElementById("question-text");
+const nextButton = document.getElementById("next-button");
 
-    function showQuestion() {
-      const quiz = quizzes[currentTarget];
-      const q = quiz.questions[currentIndex];
-      questionText.textContent = q.q;
-    }
+// 顯示第一題
+function showQuestion() {
+  quizContainer.style.display = "block";
+  nextButton.style.display = "none";
+  questionText.innerText = questions[currentQuestionIndex].question;
+  showingQuestion = true;
+}
 
-    function answer(userAnswer) {
-      const quiz = quizzes[currentTarget];
-      const correct = quiz.questions[currentIndex].a;
-      if (userAnswer === correct) {
-        correctSound.play();
-        alert("答對了！");
-        if (currentIndex < quiz.questions.length - 1) {
-          currentIndex++;
-          showQuestion();
-        } else {
-          alert("本題庫已完成！");
-        }
-      } else {
-        wrongSound.play();
-        alert("答錯了！再試一次");
-      }
-    }
+// 作答邏輯
+function submitAnswer(userAnswer) {
+  const correct = questions[currentQuestionIndex].answer === userAnswer;
+  const correctSound = document.getElementById("correctSound");
+  const wrongSound = document.getElementById("wrongSound");
 
-    window.addEventListener("load", () => {
-      const target1 = document.querySelector("#target1");
-      const target2 = document.querySelector("#target2");
+  if (correct) {
+    correctSound.play();
+    nextButton.style.display = "block";
+  } else {
+    wrongSound.play();
+    alert("答錯了，請再試一次！");
+  }
+}
+// 切換下一題
+function nextQuestion() {
+  currentQuestionIndex++;
+  if (currentQuestionIndex >= questions.length) {
+    alert("答題完成！");
+    quizContainer.style.display = "none";
+  } else {
+    showQuestion();
+  }
+}
 
-      function onTargetFound(index) {
-        currentTarget = index;
-        currentIndex = 0;
-        textBox.textContent = quizzes[index].name;
-        textBox.style.display = "block";
-        showQuestion();
-        quizBox.style.display = "block";
-      }
-
-      function onTargetLost() {
-        textBox.style.display = "none";
-        quizBox.style.display = "none";
-      }
-
-      target1.addEventListener("targetFound", () => onTargetFound(0));
-      target2.addEventListener("targetFound", () => onTargetFound(1));
-      target1.addEventListener("targetLost", onTargetLost);
-      target2.addEventListener("targetLost", onTargetLost);
-    });
+// 顯示字卡後觸發顯示題目（例如你已有的 targetFound 事件中加入）
+targetEl.addEventListener("targetFound", () => {
+  customDiv.style.display = "block";
+  if (!showingQuestion) showQuestion(); // 顯示題目一次
+});
   </script>
-  </body>
+</body>
 </html>
