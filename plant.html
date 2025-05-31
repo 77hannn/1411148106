@@ -95,7 +95,29 @@
     </a-entity>
   </a-scene>
 
-  <!-- JavaScript 控制邏輯 -->
+  <div id="custom-text">台灣二葉松（學名：Pinus taiwanensis）</div>
+  <div id="quiz">
+    <p>台灣二葉松是常綠植物？</p>
+    <button onclick="answer(true)">是</button>
+    <button onclick="answer(false)">否</button>
+  </div>
+  <audio id="correctSound" src="correct.mp3"></audio>
+  <audio id="wrongSound" src="wrong.mp3"></audio>
+  <a-scene mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: true; uiError: true; uiScanning: true"
+           color-space="sRGB"
+           renderer="colorManagement: true, physicallyCorrectLights: true"
+           vr-mode-ui="enabled: false"
+           device-orientation-permission-ui="enabled: false"
+           class="scene">
+    <a-assets>
+      <img id="resultImg" src="card1.jpg" />
+    </a-assets>
+    <a-light type="ambient" intensity="3"></a-light>
+    <a-camera look-controls="enabled: false"></a-camera>
+    <a-entity id="target" mindar-image-target="targetIndex: 0">
+      <a-plane src="#resultImg" width="1.2" height="0.7" position="0 0 0"></a-plane>
+    </a-entity>
+  </a-scene>
   <script>
     window.addEventListener("load", () => {
       const target = document.querySelector("#target");
@@ -104,17 +126,17 @@
 
       target.addEventListener("targetFound", () => {
         customDiv.style.display = "block";
-        quizDiv.style.display = "none"; // 顯示名片時不顯示題目
+        quizDiv.style.display = "none";
       });
 
       target.addEventListener("targetLost", () => {
         customDiv.style.display = "none";
-        quizDiv.style.display = "block"; // 名片關掉後出現題目
+        quizDiv.style.display = "block";
       });
     });
 
     function answer(isYes) {
-      const correct = true; // 正確答案是「是」
+      const correct = true;
       const correctSound = document.getElementById("correctSound");
       const wrongSound = document.getElementById("wrongSound");
 
@@ -125,8 +147,6 @@
         wrongSound.play();
         alert("答錯了！");
       }
-
-      // 題目關閉
       document.querySelector("#quiz").style.display = "none";
     }
   </script>
