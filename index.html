@@ -105,7 +105,6 @@
   </div>
   <audio id="correctSound" src="correct.mp3"></audio>
   <audio id="wrongSound" src="wrong.mp3"></audio>
- 
   <script>
     const quizData = [
       { question: "台灣二葉松是常綠植物？", answer: true },
@@ -130,11 +129,13 @@
       if (isYes === correct) {
         correctSound.play();
         alert("答對了！");
-        document.getElementById("next-btn").style.display = currentIndex < quizData.length - 1 ? "inline-block" : "none";
       } else {
         wrongSound.play();
         alert("答錯了！再試一次");
       }
+
+      // 下一題按鈕永遠顯示（不管對錯）
+      document.getElementById("next-btn").style.display = currentIndex < quizData.length - 1 ? "inline-block" : "none";
     }
 
     function nextQuestion() {
@@ -151,15 +152,14 @@
 
       target.addEventListener("targetFound", () => {
         customDiv.style.display = "block";
-        quizDiv.style.display = "none";
       });
 
       target.addEventListener("targetLost", () => {
         customDiv.style.display = "none";
         quizDiv.style.display = "block";
-        currentIndex = 0;
         showQuestion();
       });
     });
   </script>
+  </body>
 </html>
