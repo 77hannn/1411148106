@@ -3,11 +3,25 @@
 <head>
   <meta charset="utf-8" />
   <title>數位展示應用－AR名片互動</title>
+  <!-- A-Frame + MindAR -->
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <!-- CSS 設定 -->
   <style>
-    html, body { margin: 0; height: 100%; overflow: hidden; }
-    .scene { width: 100%; height: 100%; position: fixed; top: 0; left: 0; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+    .scene {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+    /* 顯示植物名稱 */
     #custom-text {
       display: none;
       position: fixed;
@@ -21,6 +35,7 @@
       border-radius: 0.3em;
       z-index: 9999;
     }
+    /* 題目區塊 */
     #quiz {
       display: none;
       position: fixed;
@@ -43,30 +58,92 @@
   </style>
 </head>
 <body>
+  <!-- 植物名稱 -->
   <div id="custom-text">台灣二葉松（學名：Pinus taiwanensis）</div>
+
+  <!-- 題目區塊 -->
   <div id="quiz">
     <p>台灣二葉松是常綠植物？</p>
     <button onclick="answer(true)">是</button>
     <button onclick="answer(false)">否</button>
   </div>
+
+  <!-- 音效 -->
   <audio id="correctSound" src="correct.mp3"></audio>
   <audio id="wrongSound" src="wrong.mp3"></audio>
+
+  <!-- AR 場景 -->
   <a-scene mindar-image="imageTargetSrc: targets.mind; autoStart: true; uiLoading: true; uiError: true; uiScanning: true"
            color-space="sRGB"
            renderer="colorManagement: true, physicallyCorrectLights: true"
            vr-mode-ui="enabled: false"
            device-orientation-permission-ui="enabled: false"
            class="scene">
+
+    <!-- 資源載入 -->
     <a-assets>
       <img id="resultImg" src="card1.jpg" />
     </a-assets>
+
+    <!-- 燈光與攝影機 -->
     <a-light type="ambient" intensity="3"></a-light>
     <a-camera look-controls="enabled: false"></a-camera>
+
+    <!-- 圖像識別後顯示的圖像 -->
     <a-entity id="target" mindar-image-target="targetIndex: 0">
       <a-plane src="#resultImg" width="1.2" height="0.7" position="0 0 0"></a-plane>
     </a-entity>
   </a-scene>
+
+  <div id="custom-text">台灣二葉松（學名：Pinus taiwanensis）</div>
+  <div id="quiz">
+    <p id="question-text">題目載入中...</p>
+    <button onclick="answer(true)">是</button>
+    <button onclick="answer(false)">否</button>
+    <br />
+    <button id="next-btn" style="display: none;" onclick="nextQuestion()">下一題</button>
+  </div>
+  <audio id="correctSound" src="correct.mp3"></audio>
+  <audio id="wrongSound" src="wrong.mp3"></audio>
+ 
   <script>
+    const quizData = [
+      { question: "台灣二葉松是常綠植物？", answer: true },
+      { question: "台灣二葉松原產於非洲？", answer: false },
+      { question: "台灣二葉松屬於松科？", answer: true },
+      { question: "台灣二葉松每年都會落葉？", answer: false },
+      { question: "台灣二葉松是台灣原生植物之一？", answer: true }
+    ];
+    let currentIndex = 0;
+
+    function showQuestion() {
+      const q = quizData[currentIndex];
+      document.getElementById("question-text").textContent = q.question;
+      document.getElementById("next-btn").style.display = "none";
+    }
+
+    function answer(isYes) {
+      const correct = quizData[currentIndex].answer;
+      const correctSound = document.getElementById("correctSound");
+      const wrongSound = document.getElementById("wrongSound");
+
+      if (isYes === correct) {
+        correctSound.play();
+        alert("答對了！");
+        document.getElementById("next-btn").style.display = currentIndex < quizData.length - 1 ? "inline-block" : "none";
+      } else {
+        wrongSound.play();
+        alert("答錯了！再試一次");
+      }
+    }
+
+    function nextQuestion() {
+      if (currentIndex < quizData.length - 1) {
+        currentIndex++;
+        showQuestion();
+      }
+    }
+
     window.addEventListener("load", () => {
       const target = document.querySelector("#target");
       const customDiv = document.querySelector("#custom-text");
@@ -80,23 +157,9 @@
       target.addEventListener("targetLost", () => {
         customDiv.style.display = "none";
         quizDiv.style.display = "block";
+        currentIndex = 0;
+        showQuestion();
       });
     });
-
-    function answer(isYes) {
-      const correct = true;
-      const correctSound = document.getElementById("correctSound");
-      const wrongSound = document.getElementById("wrongSound");
-
-      if (isYes === correct) {
-        correctSound.play();
-        alert("答對了！");
-      } else {
-        wrongSound.play();
-        alert("答錯了！");
-      }
-      document.querySelector("#quiz").style.display = "none";
-    }
   </script>
-</body>
 </html>
