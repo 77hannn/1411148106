@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>AR植物互動學習</title>
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; }
+    .scene { width: 100%; height: 100%; position: fixed; top: 0; left: 0; }
+    #custom-text {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 0.5em 1em;
+      font-size: 1.2em;
+      border-radius: 0.3em;
+      z-index: 9999;
+    }
+    #quiz {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 1em;
+      border-radius: 0.5em;
+      z-index: 9999;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      font-size: 1.1em;
+      text-align: center;
+      width: 80%;
+      max-width: 400px;
+    }
+    #quiz button {
+      margin: 0.5em;
+      padding: 0.5em 1em;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+  <div id="custom-text">植物名稱</div>
+  <div id="quiz">
+    <p id="question-text">題目載入中...</p>
+    <button onclick="answer(true)">是</button>
+    <button onclick="answer(false)">否</button>
+  </div>
+
+  <audio id="correctSound" src="correct.mp3"></audio>
+  <audio id="wrongSound" src="wrong.mp3"></audio>
+
+  <a-scene mindar-image="imageTargetSrc: targets.mind; autoStart: true;"
+           color-space="sRGB"
+           renderer="colorManagement: true, physicallyCorrectLights: true"
+           vr-mode-ui="enabled: false"
+           device-orientation-permission-ui="enabled: false"
+           class="scene">
+
+    <a-assets>
+      <img id="card1" src="card1.jpg" />
+      <img id="card2" src="card2.jpg" />
+    </a-assets>
+
+    <a-light type="ambient" intensity="3"></a-light>
+    <a-camera look-controls="enabled: false"></a-camera>
+
+    <a-entity id="target1" mindar-image-target="targetIndex: 0">
+      <a-plane src="#card1" width="1.2" height="0.7" position="0 0 0"></a-plane>
+    </a-entity>
+
+    <a-entity id="target2" mindar-image-target="targetIndex: 1">
+      <a-plane src="#card2" width="1.2" height="0.7" position="0 0 0"></a-plane>
+    </a-entity>
+
+  </a-scene>
+
+  <script>
+    const textBox = document.getElementById("custom-text");
+    const quizBox = document.getElementById("quiz");
+    const questionText = document.getElementById("question-text");
+    const correctSound = document.getElementById("correctSound");
+    const wrongSound = document.getElementById("wrongSound");
+
+    const quizzes = {
+      0: {
+        name: "台灣二葉松",
+        questions: [
+          { q: "二葉松是松科植物？", a: true },
+          { q: "二葉松的葉子是針狀的？", a: true },
+          { q: "二葉松代表繁榮與長壽？", a: true },
+          { q: "二葉松原產於歐洲？", a: false },
+          { q: "二葉松常見於台灣高山地區？", a: true }
+        ]
+      },
+      1: {
+        name: "春不老",
+        questions: [
+          { q: "春不老屬於菊科植物？", a: true },
+          { q: "春不老的花是黃色的？", a: true },
+          { q: "春不老常見於寒帶地區？", a: false },
+          { q: "春不老象徵青春與長壽？", a: true },
+          { q: "春不老是木本植物？", a: false }
+        ]
+      }
+    };
+
+    let currentTarget = null;
+    let currentIndex = 0;
+
+    function showQuestion() {
+      const quiz = quizzes[currentTarget];
+      const q = quiz.questions[currentIndex];
+      questionText.textContent = q.q;
+    }
+
+    function answer(userAnswer) {
+      const quiz = quizzes[currentTarget];
+      const correct = quiz.questions[currentIndex].a;
+      if (userAnswer === correct) {
+        correctSound.play();
+        alert("答對了！");
+        if (currentIndex < quiz.questions.length - 1) {
+          currentIndex++;
+          showQuestion();
+        } else {
+          alert("本題庫已完成！");
+        }
+      } else {
+        wrongSound.play();
+        alert("答錯了！再試一次");
+      }
+    }
+
+    window.addEventListener("load", () => {
+      const target1 = document.querySelector("#target1");
+      const target2 = document.querySelector("#target2");
+
+      function onTargetFound(index) {
+        currentTarget = index;
+        currentIndex = 0;
+        textBox.textContent = quizzes[index].name;
+        textBox.style.display = "block";
+        showQuestion();
+        quizBox.style.display = "block";
+      }
+
+      function onTargetLost() {
+        textBox.style.display = "none";
+        quizBox.style.display = "none";
+      }
+
+      target1.addEventListener("targetFound", () => onTargetFound(0));
+      target2.addEventListener("targetFound", () => onTargetFound(1));
+      target1.addEventListener("targetLost", onTargetLost);
+      target2.addEventListener("targetLost", onTargetLost);
+    });
+  </script>
+</body>
+</html>
