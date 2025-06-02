@@ -133,19 +133,17 @@ plant4: [
   function submitAnswer(userAnswer) {
     const correct = quizzes[currentPlant][currentIndex].answer === userAnswer;
     document.getElementById(correct ? 'correct-sound' : 'wrong-sound').play();
-     if (isCorrect) {
-    currentIndex++;
-    if (currentIndex < quizzes[currentPlant].length) {
-      showQuestion();
+        if (correct) {
+      currentIndex++;
+      if (currentIndex < quizzes[currentPlant].length) {
+        showQuestion();
+      } else {
+        document.getElementById('quiz-container').style.display = 'none';
+        document.getElementById('next-plant-container').style.display = 'block';
+      }
     } else {
-      document.getElementById('quiz-container').style.display = 'none';
-      document.getElementById('next-plant-container').style.display = 'block';
+      alert('答錯了，再試一次！');
     }
-  } else {
-    // 播放音效但不彈出視窗
-    document.getElementById('wrong-sound').play();
-    // 題目維持原題，讓使用者再選擇
-  }
   }
 
   function restartScan() {
