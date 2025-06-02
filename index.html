@@ -6,7 +6,42 @@
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <style>
+    html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  overflow: hidden;
+}
+a-scene {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
     body { margin: 0; overflow: hidden; }
+    .btn-group {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+    .btn-group button {
+      font-size: 18px;
+      padding: 12px 24px;
+      margin: 10px;
+      border: none;
+      border-radius: 20px;
+      background-color: #4da6ff;
+      color: white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
     .audioControl {
       position: fixed;
       bottom: 20px;
@@ -18,81 +53,64 @@
       border-radius: 10px;
       z-index: 9999;
     }
-    .btn-group {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 9999;
-    }
-    .btn-group button {
-      margin: 0 5px;
-      padding: 8px 12px;
-    }
   </style>
 </head>
 
 <body>
 
-<!-- 解說播放按鈕 -->
-<div class="btn-group">
+<!-- 四組對應植物的按鈕 -->
+<div id="btnGroup1" class="btn-group">
   <button id="btn1">播放二葉松解說</button>
+</div>
+<div id="btnGroup2" class="btn-group">
   <button id="btn2">播放春不老解說</button>
+</div>
+<div id="btnGroup3" class="btn-group">
   <button id="btn3">播放水梔子解說</button>
+</div>
+<div id="btnGroup4" class="btn-group">
   <button id="btn4">播放藍星花解說</button>
 </div>
 
-<!-- 音樂播放器與進度條 -->
+<!-- 音訊播放器 -->
 <audio id="plantAudio" controls style="display:none;"></audio>
 <div class="audioControl">
   <progress id="progressBar" value="0" max="100" style="width:100%;"></progress>
 </div>
 
-<!-- Plant 1 -->
-<a-scene embedded mindar-image="imageTargetSrc: plant1.mind; autoStart: true;" 
-         vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-  <a-assets><img id="card1" src="card1.jpg" /></a-assets>
+<!-- 掃描多個獨立 .mind 的場景 -->
+<a-scene
+  mindar-image="imageTargetSrc: plant1.mind, plant2.mind, plant3.mind, plant4.mind; autoStart: true;"
+  color-space="sRGB"
+  renderer="colorManagement: true; physicallyCorrectLights: true"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  embedded
+>
+  <a-assets>
+    <img id="card1" src="card1.jpg" />
+    <img id="card2" src="card2.jpg" />
+    <img id="card3" src="card3.jpg" />
+    <img id="card4" src="card4.jpg" />
+  </a-assets>
+
   <a-camera look-controls="enabled: false"></a-camera>
   <a-light type="ambient" intensity="3"></a-light>
+
   <a-entity id="marker1" mindar-image-target="targetIndex: 0">
     <a-plane src="#card1" width="1.2" height="0.7" position="0 0 0"></a-plane>
   </a-entity>
-</a-scene>
-
-<!-- Plant 2 -->
-<a-scene embedded mindar-image="imageTargetSrc: plant2.mind; autoStart: true;" 
-         vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-  <a-assets><img id="card2" src="card2.jpg" /></a-assets>
-  <a-camera look-controls="enabled: false"></a-camera>
-  <a-light type="ambient" intensity="3"></a-light>
-  <a-entity id="marker2" mindar-image-target="targetIndex: 0">
+  <a-entity id="marker2" mindar-image-target="targetIndex: 1">
     <a-plane src="#card2" width="3.6" height="2.1" position="0 0 0"></a-plane>
   </a-entity>
-</a-scene>
-
-<!-- Plant 3 -->
-<a-scene embedded mindar-image="imageTargetSrc: plant3.mind; autoStart: true;" 
-         vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-  <a-assets><img id="card3" src="card3.jpg" /></a-assets>
-  <a-camera look-controls="enabled: false"></a-camera>
-  <a-light type="ambient" intensity="3"></a-light>
-  <a-entity id="marker3" mindar-image-target="targetIndex: 0">
+  <a-entity id="marker3" mindar-image-target="targetIndex: 2">
     <a-plane src="#card3" width="2.4" height="1.4" position="0 0 0"></a-plane>
   </a-entity>
-</a-scene>
-
-<!-- Plant 4 -->
-<a-scene embedded mindar-image="imageTargetSrc: plant4.mind; autoStart: true;" 
-         vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-  <a-assets><img id="card4" src="card4.jpg" /></a-assets>
-  <a-camera look-controls="enabled: false"></a-camera>
-  <a-light type="ambient" intensity="3"></a-light>
-  <a-entity id="marker4" mindar-image-target="targetIndex: 0">
+  <a-entity id="marker4" mindar-image-target="targetIndex: 3">
     <a-plane src="#card4" width="2.4" height="1.4" position="0 0 0"></a-plane>
   </a-entity>
 </a-scene>
 
-<!-- 控制腳本 -->
 <script>
   const audio = document.getElementById("plantAudio");
   const progress = document.getElementById("progressBar");
@@ -104,32 +122,47 @@
     marker4: "plant4.mp3"
   };
 
-  // 掃描觸發
-  function bindMarkerAudio(markerId) {
+  const markerToBtnGroup = {
+    marker1: "btnGroup1",
+    marker2: "btnGroup2",
+    marker3: "btnGroup3",
+    marker4: "btnGroup4"
+  };
+
+  function hideAllButtonGroups() {
+    Object.values(markerToBtnGroup).forEach(id => {
+      document.getElementById(id).style.display = "none";
+    });
+  }
+
+  Object.keys(markerToAudio).forEach(markerId => {
     const marker = document.getElementById(markerId);
+    const btnGroup = document.getElementById(markerToBtnGroup[markerId]);
+
     marker.addEventListener("targetFound", () => {
       audio.src = markerToAudio[markerId];
       audio.play();
       audio.style.display = "block";
+      hideAllButtonGroups();
+      btnGroup.style.display = "flex";
     });
+
     marker.addEventListener("targetLost", () => {
       audio.pause();
       audio.currentTime = 0;
       progress.value = 0;
+      btnGroup.style.display = "none";
     });
-  }
+  });
 
-  Object.keys(markerToAudio).forEach(bindMarkerAudio);
-
-  // 解說按鈕播放功能
-  const buttonToAudio = {
+  const btnMap = {
     btn1: "plant1.mp3",
     btn2: "plant2.mp3",
     btn3: "plant3.mp3",
     btn4: "plant4.mp3"
   };
 
-  Object.entries(buttonToAudio).forEach(([btnId, audioSrc]) => {
+  Object.entries(btnMap).forEach(([btnId, audioSrc]) => {
     const btn = document.getElementById(btnId);
     btn.addEventListener("click", () => {
       if (audio.src.includes(audioSrc)) {
@@ -145,7 +178,6 @@
     });
   });
 
-  // 進度條更新
   audio.addEventListener("timeupdate", () => {
     if (audio.duration > 0) {
       progress.value = (audio.currentTime / audio.duration) * 100;
