@@ -1,112 +1,142 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8"/>
-  <title>Plant Introduction</title>
+  <meta charset="utf-8">
+  <title>AR 植物介紹</title>
   <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <script src="https://unpkg.com/aframe-gesture-detector@3.3.0/dist/aframe-gesture-detector.min.js"></script>
   <style>
-    body { margin: 0; overflow: hidden; background: black; }
-    audio { display: none; } /* 隱藏語音控制 */
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+
+    .audio-box {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 8px 16px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .audio-box audio {
+      width: 250px;
+      height: 30px;
+      border-radius: 10px;
+      outline: none;
+    }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
 
-<!-- 隱藏的語音播放器 -->
-<audio id="audio1" src="plant1.mp3"></audio>
-<audio id="audio2" src="plant2.mp3"></audio>
-<audio id="audio3" src="plant3.mp3"></audio>
-<audio id="audio4" src="plant4.mp3"></audio>
+<!-- ✅ 高級語音播放器（只顯示正在播放的） -->
+<div id="audio-container" class="audio-box">
+  <audio id="audio1" src="plant1.mp3" controls></audio>
+  <audio id="audio2" src="plant2.mp3" controls class="hidden"></audio>
+  <audio id="audio3" src="plant3.mp3" controls class="hidden"></audio>
+  <audio id="audio4" src="plant4.mp3" controls class="hidden"></audio>
+</div>
 
-<!-- Plant 1 -->
-<a-scene embedded
-         mindar-image="imageTargetSrc: plant1.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
-         vr-mode-ui="enabled: false"
-         device-orientation-permission-ui="enabled: false"
-         gesture-detector>
+<!-- ✅ Plant 1 -->
+<a-scene
+  embedded
+  mindar-image="imageTargetSrc: plant1.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  gesture-detector>
   <a-assets>
     <img id="card1" src="card1.jpg" />
   </a-assets>
   <a-camera look-controls="enabled: false"></a-camera>
   <a-entity id="marker1" mindar-image-target="targetIndex: 0">
-    <a-plane src="#card1" width="1.2" height="0.7" position="0 0 0"
-             gesture-handler>
-    </a-plane>
+    <a-plane src="#card1" width="1.2" height="0.7" position="0 0 0" gesture-handler></a-plane>
   </a-entity>
 </a-scene>
 
-<!-- Plant 2 -->
-<a-scene embedded
-         mindar-image="imageTargetSrc: plant2.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
-         vr-mode-ui="enabled: false"
-         device-orientation-permission-ui="enabled: false"
-         gesture-detector>
+<!-- ✅ Plant 2 -->
+<a-scene
+  embedded
+  mindar-image="imageTargetSrc: plant2.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  gesture-detector>
   <a-assets>
     <img id="card2" src="card2.jpg" />
   </a-assets>
   <a-camera look-controls="enabled: false"></a-camera>
   <a-entity id="marker2" mindar-image-target="targetIndex: 0">
-    <a-plane src="#card2" width="3.6" height="2.1" position="0 0 0"
-             gesture-handler>
-    </a-plane>
+    <a-plane src="#card2" width="3.6" height="2.1" position="0 0 0" gesture-handler></a-plane>
   </a-entity>
 </a-scene>
 
-<!-- Plant 3 -->
-<a-scene embedded
-         mindar-image="imageTargetSrc: plant3.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
-         vr-mode-ui="enabled: false"
-         device-orientation-permission-ui="enabled: false"
-         gesture-detector>
+<!-- ✅ Plant 3 -->
+<a-scene
+  embedded
+  mindar-image="imageTargetSrc: plant3.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  gesture-detector>
   <a-assets>
     <img id="card3" src="card3.jpg" />
   </a-assets>
   <a-camera look-controls="enabled: false"></a-camera>
   <a-entity id="marker3" mindar-image-target="targetIndex: 0">
-    <a-plane src="#card3" width="2.4" height="1.4" position="0 0 0"
-             gesture-handler>
-    </a-plane>
+    <a-plane src="#card3" width="2.4" height="1.4" position="0 0 0" gesture-handler></a-plane>
   </a-entity>
 </a-scene>
 
-<!-- Plant 4 -->
-<a-scene embedded
-         mindar-image="imageTargetSrc: plant4.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
-         vr-mode-ui="enabled: false"
-         device-orientation-permission-ui="enabled: false"
-         gesture-detector>
+<!-- ✅ Plant 4 -->
+<a-scene
+  embedded
+  mindar-image="imageTargetSrc: plant4.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false"
+  gesture-detector>
   <a-assets>
     <img id="card4" src="card4.jpg" />
   </a-assets>
   <a-camera look-controls="enabled: false"></a-camera>
   <a-entity id="marker4" mindar-image-target="targetIndex: 0">
-    <a-plane src="#card4" width="2.4" height="1.4" position="0 0 0"
-             gesture-handler>
-    </a-plane>
+    <a-plane src="#card4" width="2.4" height="1.4" position="0 0 0" gesture-handler></a-plane>
   </a-entity>
 </a-scene>
 
-<!-- JS 控制語音播放邏輯 -->
+<!-- ✅ 音檔播放控制邏輯 -->
 <script>
 function setupMarker(markerId, audioId) {
   const marker = document.getElementById(markerId);
   const audio = document.getElementById(audioId);
+  const allAudios = ["audio1", "audio2", "audio3", "audio4"];
 
   marker.addEventListener("targetFound", () => {
-    ['audio1', 'audio2', 'audio3', 'audio4'].forEach(id => {
+    allAudios.forEach(id => {
       const a = document.getElementById(id);
-      if (id !== audioId) {
+      if (id === audioId) {
+        a.classList.remove("hidden");
+        a.play();
+      } else {
         a.pause();
         a.currentTime = 0;
+        a.classList.add("hidden");
       }
     });
-    audio.play();
   });
 
   marker.addEventListener("targetLost", () => {
     audio.pause();
     audio.currentTime = 0;
+    audio.classList.add("hidden");
   });
 }
 
