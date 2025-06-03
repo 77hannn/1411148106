@@ -1,18 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-Hant">
 <head>
   <meta charset="utf-8">
-  <title>AR 植物介紹</title>
-  <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  <script src="https://unpkg.com/aframe-gesture-detector@3.3.0/dist/aframe-gesture-detector.min.js"></script>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: black;
-    }
+  <title>AR 植物互動展示</title>
 
+  <!-- A-Frame 主程式 -->
+  <script src="https://cdn.jsdelivr.net/npm/aframe@1.4.2/dist/aframe.min.js"></script>
+
+  <!-- MindAR AR 擴增元件 -->
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <!-- 手勢擴充：支援放大縮小旋轉 -->
+  <script src="https://unpkg.com/aframe-gesture-detector@3.3.0/dist/aframe-gesture-detector.min.js"></script>
+
+  <style>
+    body { margin: 0; overflow: hidden; background: black; }
+
+    /* 語音播放器樣式（懸浮透明玻璃風） */
     .audio-box {
       position: fixed;
       bottom: 20px;
@@ -22,14 +26,14 @@
       background: rgba(255, 255, 255, 0.15);
       backdrop-filter: blur(8px);
       border-radius: 12px;
-      padding: 8px 16px;
+      padding: 10px 16px;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
     }
 
     .audio-box audio {
-      width: 250px;
-      height: 30px;
-      border-radius: 10px;
+      width: 260px;
+      height: 32px;
+      border-radius: 8px;
       outline: none;
     }
 
@@ -38,112 +42,110 @@
     }
   </style>
 </head>
+
 <body>
 
-<!-- ✅ 高級語音播放器（只顯示正在播放的） -->
-<div id="audio-container" class="audio-box">
+<!-- 🔊 語音播放器容器 -->
+<div class="audio-box">
   <audio id="audio1" src="plant1.mp3" controls></audio>
   <audio id="audio2" src="plant2.mp3" controls class="hidden"></audio>
   <audio id="audio3" src="plant3.mp3" controls class="hidden"></audio>
   <audio id="audio4" src="plant4.mp3" controls class="hidden"></audio>
 </div>
 
-<!-- ✅ Plant 1 -->
+<!-- ✅ 主 AR 場景 -->
 <a-scene
-  embedded
-  mindar-image="imageTargetSrc: plant1.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
+  mindar-image="imageTargetSrc: plants.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
   vr-mode-ui="enabled: false"
   device-orientation-permission-ui="enabled: false"
-  gesture-detector>
+  gesture-detector
+  embedded
+>
+  <!-- 📁 資產載入區 -->
   <a-assets>
-    <img id="card1" src="card1.jpg" />
+    <img id="card1" src="card1.jpg">
+    <img id="card2" src="card2.jpg">
+    <img id="card3" src="card3.jpg">
+    <img id="card4" src="card4.jpg">
   </a-assets>
+
+  <!-- 🎥 相機（固定視角） -->
   <a-camera look-controls="enabled: false"></a-camera>
-  <a-entity id="marker1" mindar-image-target="targetIndex: 0">
-    <a-plane src="#card1" width="1.2" height="0.7" position="0 0 0" gesture-handler></a-plane>
+
+  <!-- 🌿 名片 1：春不老 -->
+  <a-entity mindar-image-target="targetIndex: 0" id="marker1">
+    <a-entity id="card1-wrapper" scale="1 1 1" rotation="0 0 0" gesture-handler>
+      <a-plane
+        material="shader: flat; src: #card1; transparent: true"
+        width="1.2" height="0.7" position="0 0 0">
+      </a-plane>
+    </a-entity>
+  </a-entity>
+
+  <!-- 🌲 名片 2：台灣二葉松 -->
+  <a-entity mindar-image-target="targetIndex: 1" id="marker2">
+    <a-entity id="card2-wrapper" scale="1 1 1" rotation="0 0 0" gesture-handler>
+      <a-plane
+        material="shader: flat; src: #card2; transparent: true"
+        width="1.8" height="1.1" position="0 0 0">
+      </a-plane>
+    </a-entity>
+  </a-entity>
+
+  <!-- 💙 名片 3：藍星花 -->
+  <a-entity mindar-image-target="targetIndex: 2" id="marker3">
+    <a-entity id="card3-wrapper" scale="1 1 1" rotation="0 0 0" gesture-handler>
+      <a-plane
+        material="shader: flat; src: #card3; transparent: true"
+        width="1.5" height="0.9" position="0 0 0">
+      </a-plane>
+    </a-entity>
+  </a-entity>
+
+  <!-- 🤍 名片 4：水梔子 -->
+  <a-entity mindar-image-target="targetIndex: 3" id="marker4">
+    <a-entity id="card4-wrapper" scale="1 1 1" rotation="0 0 0" gesture-handler>
+      <a-plane
+        material="shader: flat; src: #card4; transparent: true"
+        width="1.5" height="0.9" position="0 0 0">
+      </a-plane>
+    </a-entity>
   </a-entity>
 </a-scene>
 
-<!-- ✅ Plant 2 -->
-<a-scene
-  embedded
-  mindar-image="imageTargetSrc: plant2.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
-  vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: false"
-  gesture-detector>
-  <a-assets>
-    <img id="card2" src="card2.jpg" />
-  </a-assets>
-  <a-camera look-controls="enabled: false"></a-camera>
-  <a-entity id="marker2" mindar-image-target="targetIndex: 0">
-    <a-plane src="#card2" width="3.6" height="2.1" position="0 0 0" gesture-handler></a-plane>
-  </a-entity>
-</a-scene>
-
-<!-- ✅ Plant 3 -->
-<a-scene
-  embedded
-  mindar-image="imageTargetSrc: plant3.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
-  vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: false"
-  gesture-detector>
-  <a-assets>
-    <img id="card3" src="card3.jpg" />
-  </a-assets>
-  <a-camera look-controls="enabled: false"></a-camera>
-  <a-entity id="marker3" mindar-image-target="targetIndex: 0">
-    <a-plane src="#card3" width="2.4" height="1.4" position="0 0 0" gesture-handler></a-plane>
-  </a-entity>
-</a-scene>
-
-<!-- ✅ Plant 4 -->
-<a-scene
-  embedded
-  mindar-image="imageTargetSrc: plant4.mind; autoStart: true; uiScanning: false; uiLoading: false; uiError: false;"
-  vr-mode-ui="enabled: false"
-  device-orientation-permission-ui="enabled: false"
-  gesture-detector>
-  <a-assets>
-    <img id="card4" src="card4.jpg" />
-  </a-assets>
-  <a-camera look-controls="enabled: false"></a-camera>
-  <a-entity id="marker4" mindar-image-target="targetIndex: 0">
-    <a-plane src="#card4" width="2.4" height="1.4" position="0 0 0" gesture-handler></a-plane>
-  </a-entity>
-</a-scene>
-
-<!-- ✅ 音檔播放控制邏輯 -->
+<!-- 📜 語音播放邏輯 JS -->
 <script>
-function setupMarker(markerId, audioId) {
-  const marker = document.getElementById(markerId);
-  const audio = document.getElementById(audioId);
-  const allAudios = ["audio1", "audio2", "audio3", "audio4"];
+  function setupMarker(markerId, audioId) {
+    const marker = document.getElementById(markerId);
+    const audio = document.getElementById(audioId);
+    const allAudios = ["audio1", "audio2", "audio3", "audio4"];
 
-  marker.addEventListener("targetFound", () => {
-    allAudios.forEach(id => {
-      const a = document.getElementById(id);
-      if (id === audioId) {
-        a.classList.remove("hidden");
-        a.play();
-      } else {
-        a.pause();
-        a.currentTime = 0;
-        a.classList.add("hidden");
-      }
+    marker.addEventListener("targetFound", () => {
+      allAudios.forEach(id => {
+        const a = document.getElementById(id);
+        if (id === audioId) {
+          a.classList.remove("hidden");
+          a.play();
+        } else {
+          a.pause();
+          a.currentTime = 0;
+          a.classList.add("hidden");
+        }
+      });
     });
-  });
 
-  marker.addEventListener("targetLost", () => {
-    audio.pause();
-    audio.currentTime = 0;
-    audio.classList.add("hidden");
-  });
-}
+    marker.addEventListener("targetLost", () => {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.classList.add("hidden");
+    });
+  }
 
-setupMarker("marker1", "audio1");
-setupMarker("marker2", "audio2");
-setupMarker("marker3", "audio3");
-setupMarker("marker4", "audio4");
+  // 🔁 設定所有 marker 的行為
+  setupMarker("marker1", "audio1");
+  setupMarker("marker2", "audio2");
+  setupMarker("marker3", "audio3");
+  setupMarker("marker4", "audio4");
 </script>
 
 </body>
